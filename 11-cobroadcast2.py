@@ -1,6 +1,8 @@
-# cobroadcast.py
-#
 # An example of broadcasting a data stream onto multiple coroutine targets.
+# This example shows "fan-in"---a situation where multiple coroutines
+# send to the same target.
+
+
 
 # A data source.  This is not a coroutine, but it sends
 # data into one (target)
@@ -25,20 +27,16 @@ def follow(thefile, target):
         if not line:
             time.sleep(0.1)  # Sleep briefly
             continue
-
-        # если появилась новая строка пошлем ее объекту target
-        # в данном случае это broadcast
         target.send(line)
 
 
-# grep фильтрует по наличию патерна в строке
+# A filter.
 @coroutine
 def grep(pattern, target):
     while True:
-        line = (yield)  # Получаем строку с текстом
-
-        if pattern in line:  # если подстрока есть в строке
-            target.send(line)  # то шлем строку на printer
+        line = (yield)  # Receive a line
+        if pattern in line:
+            target.send(line)  # Send to next stage
 
 
 # A sink.  A coroutine that receives data
@@ -49,7 +47,7 @@ def printer():
         print(line)
 
 
-# Broadcast рассылает строку всем grep по списку
+# Broadcast a stream onto multiple targets
 @coroutine
 def broadcast(targets):
     while True:
@@ -62,9 +60,10 @@ def broadcast(targets):
 if __name__ == '__main__':
     f = open("access-log")
 
-    # вызовем follow
+    p = printer()
+
     follow(f,
-           broadcast([grep('python', printer()),
-                      grep('ply', printer()),
-                      grep('swig', printer())])
+           broadcast([grep('python', p),
+                      grep('ply', p),
+                      grep('swig', p)])
            )
