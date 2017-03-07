@@ -50,7 +50,7 @@ def bus_locations():
         bus = (yield)
         print("%(route)s,%(id)s,\"%(direction)s\",%(latitude)s,%(longitude)s" % bus)
 
-    # Example
+        # Example
 
 
 if __name__ == '__main__':
@@ -75,6 +75,8 @@ if __name__ == '__main__':
                   EventHandler(
                       buses_to_dicts(
                           filter_on_field("route", "22",
-                                          filter_on_field("direction", "North Bound",
-                                                          bus_locations())))
-                  ))
+                                          filter_on_field("direction", "North Bound", bus_locations())
+                                          )
+                      )
+                  )
+                  )
