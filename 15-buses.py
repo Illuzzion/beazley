@@ -3,6 +3,7 @@
 # An example of setting up an event handling pipeline with coroutines
 # and XML parsing.
 
+
 def coroutine(func):
     # декоратор coroutine
     def start(*args, **kwargs):
@@ -75,7 +76,9 @@ if __name__ == '__main__':
                   EventHandler(
                       buses_to_dicts(
                           filter_on_field("route", "22",
-                                          filter_on_field("direction", "North Bound", bus_locations())
+                                          filter_on_field("direction", "North Bound",
+                                                          bus_locations()
+                                                          )
                                           )
                       )
                   )
